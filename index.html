@@ -88,21 +88,166 @@
   </main>
 
   <script>
-    let form = document.querySelector('form');
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      let output = document.querySelector('output');
-      let firstNum = document.querySelector('#first-num').value;
-      let secondNum = document.querySelector('#second-num').value;
-      let operator = document.querySelector('#operator').value;
-      output.innerHTML = eval(`${firstNum} ${operator} ${secondNum}`);
-    });
+  let form = document.querySelector('form');
+  let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
 
-    let errorBtns = Array.from(document.querySelectorAll('#error-btns > button'));
+  class CalculatorInputError extends Error {
+    constructor(message) {
+      super(message);
+      this.name = "CalculatorInputError";
+    }
+  }
 
-    // Start your code here
-    // You may move this JS to another file if you wish
-  </script>
+  // Global Error Handler
+  window.onerror = function (message, source, lineno, colno, error) {
+    console.log("Global error caught:", message);
+    return false;
+  };
+
+  // Console Log
+  errorBtns[0].addEventListener("click", () => {
+    console.log("Console log demo: button clicked.");
+  });
+
+  // Console Error
+  errorBtns[1].addEventListener("click", () => {
+    console.error("Console error demo.");
+  });
+
+  // Console Count
+  errorBtns[2].addEventListener("click", () => {
+    console.count("Button clicked");
+  });
+
+  // Console Warn
+  errorBtns[3].addEventListener("click", () => {
+    console.warn("Console warning demo.");
+  });
+
+  // Console Assert
+  errorBtns[4].addEventListener("click", () => {
+    console.assert(2 + 2 === 5, "Assertion failed: 2 + 2 is not 5.");
+  });
+
+  // Console Clear
+  errorBtns[5].addEventListener("click", () => {
+    console.clear();
+  });
+
+  // Console Dir
+  errorBtns[6].addEventListener("click", () => {
+    console.dir(document.querySelector("main"));
+  });
+
+  // Console DirXML
+  errorBtns[7].addEventListener("click", () => {
+    console.dirxml(document.querySelector("main"));
+  });
+
+  // Console Group Start
+  errorBtns[8].addEventListener("click", () => {
+    console.group("Calculator Information");
+    console.log("First Number Input");
+    console.log("Second Number Input");
+    console.log("Operator Selector");
+  });
+
+  // Console Group End
+  errorBtns[9].addEventListener("click", () => {
+    console.groupEnd();
+  });
+
+  // Console Table
+  errorBtns[10].addEventListener("click", () => {
+    console.table([
+      {
+        field: "First Number",
+        value: document.querySelector("#first-num").value
+      },
+      {
+        field: "Operator",
+        value: document.querySelector("#operator").value
+      },
+      {
+        field: "Second Number",
+        value: document.querySelector("#second-num").value
+      }
+    ]);
+  });
+
+  // Start Timer
+  errorBtns[11].addEventListener("click", () => {
+    console.time("CalculationTimer");
+    console.log("Timer started.");
+  });
+
+  // End Timer
+  errorBtns[12].addEventListener("click", () => {
+    console.timeEnd("CalculationTimer");
+  });
+
+  // Console Trace
+  errorBtns[13].addEventListener("click", () => {
+    console.trace("Trace demo");
+  });
+
+  // Trigger Global Error
+  errorBtns[14].addEventListener("click", () => {
+    nonExistentFunction();
+  });
+
+  // Calculator with try/catch/finally and custom errors
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+
+    let output = document.querySelector('output');
+    let firstNum = document.querySelector('#first-num').value;
+    let secondNum = document.querySelector('#second-num').value;
+    let operator = document.querySelector('#operator').value;
+
+    try {
+      if (firstNum.trim() === "" || secondNum.trim() === "") {
+        throw new CalculatorInputError(
+          "Both input fields are required."
+        );
+      }
+
+      if (
+        isNaN(Number(firstNum)) ||
+        isNaN(Number(secondNum))
+      ) {
+        throw new CalculatorInputError(
+          "Inputs must be valid numbers."
+        );
+      }
+
+      if (
+        operator === "/" &&
+        Number(secondNum) === 0
+      ) {
+        throw new CalculatorInputError(
+          "Division by zero is not allowed."
+        );
+      }
+
+      output.innerHTML =
+        eval(`${firstNum} ${operator} ${secondNum}`);
+
+    } catch (error) {
+      console.error(
+        `${error.name}: ${error.message}`
+      );
+
+      output.innerHTML =
+        `Error: ${error.message}`;
+
+    } finally {
+      console.log(
+        "Calculation attempt finished."
+      );
+    }
+  });
+</script>
 </body>
 
 </html>
